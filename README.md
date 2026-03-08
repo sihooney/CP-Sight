@@ -36,10 +36,15 @@ CP-sight is a .NET 9 application that implements automated General Movements Ass
 - Secure signed URLs with expiration
 - Automatic video deletion for privacy compliance
 
-### 🧠 Pose Estimation (MoveNet + MediaPipe)
+### 🧠 Pose Estimation (MoveNet ONNX + Simulation)
 - **MoveNet ONNX**: Fast, single-person pose estimation
-- **MediaPipe**: Alternative with Python bridge support
-- **Auto-fallback**: Simulation mode when model unavailable
+- **Configurable Simulation**: Demo-ready fallback with GMA movement profiles
+  - `Demo` - Reproducible normal movements (seeded RNG)
+  - `Normal` - Variable, complex, fluent fidgety movements
+  - `PoorRepertoire` - Monotonous, low complexity
+  - `CrampedSynchronized` - High symmetry, low variability
+  - `AbsentFidgety` - No fidgety movements
+- Temporal correlation between frames, breathing simulation
 - 17 keypoints in COCO format (wrists, ankles, shoulders, etc.)
 
 ### 📊 Movement Analysis (ML.NET)
@@ -85,7 +90,6 @@ CP-sight/
 │   ├── CP-sight.ML/         # ML services
 │   │   └── Services/
 │   │       ├── MoveNetPoseEstimator.cs
-│   │       ├── MediaPipePoseEstimator.cs
 │   │       ├── PoseService.cs
 │   │       └── MovementClassifier.cs
 │   ├── CP-sight.Web/        # Blazor Server app
@@ -146,28 +150,29 @@ CP-sight/
 
 ### Cloudinary (Video Processing)
 
-Configured in `appsettings.json`:
+Configure via environment variables or `.env` file:
 
-```json
-{
-  "Cloudinary": {
-    "CloudName": "dnvw0yyib",
-    "ApiKey": "887823313431246",
-    "ApiSecret": "3X6o4aSOwBLH0_cJkLEg4XtFp14"
-  }
-}
+```env
+Cloudinary__CloudName=your_cloud_name
+Cloudinary__ApiKey=your_api_key
+Cloudinary__ApiSecret=your_api_secret
 ```
 
-### Pose Estimation
+Or in `appsettings.Development.json` (do not commit credentials).
+
+### Pose Estimation & Simulation
 
 ```json
 {
   "PoseEstimation": {
     "ModelPath": "Models/movenet.onnx",
-    "UseMediaPipe": false
+    "SimulationMode": "Demo",
+    "Seed": 42
   }
 }
 ```
+
+**SimulationMode options**: `Demo`, `Normal`, `PoorRepertoire`, `CrampedSynchronized`, `AbsentFidgety`
 
 ---
 
@@ -193,9 +198,7 @@ The system automatically selects the best available method:
 ```
 1. MoveNet ONNX (if model file exists)
       ↓ not available
-2. MediaPipe (if enabled and Python bridge available)
-      ↓ not available
-3. Simulation (statistically valid for demos)
+2. Configurable Simulation (Demo/Normal/PoorRepertoire/CrampedSynchronized/AbsentFidgety)
 ```
 
 Check status via API:

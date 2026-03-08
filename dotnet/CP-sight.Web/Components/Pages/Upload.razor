@@ -7,6 +7,7 @@
 @inject MovementClassifier Classifier
 @inject RiskAssessmentService RiskService
 @inject CloudinaryService Cloudinary
+@inject PoseService PoseService
 @inject IWebHostEnvironment Environment
 @inject ILogger<Upload> Logger
 @inject NavigationManager Navigation
@@ -182,10 +183,10 @@
             StateHasChanged();
             await Task.Delay(500);
 
-            // Step 4: Generate simulated pose data
+            // Step 4: Generate pose data using PoseService (MoveNet or configurable simulation)
             _statusMessage = "Analyzing movement patterns...";
             StateHasChanged();
-            var poseData = GenerateSimulatedPoseData();
+            var poseData = PoseService.GenerateSimulatedSequence(90); // 3s at 30fps
 
             // Step 5: Extract features
             _statusMessage = "Extracting movement features...";
@@ -249,45 +250,6 @@
             _isAnalyzing = false;
             _statusMessage = "";
         }
-    }
-
-    private List<PoseFrame> GenerateSimulatedPoseData()
-    {
-        var random = new Random();
-        var frames = new List<PoseFrame>();
-
-        for (int i = 0; i < 90; i++) // 3 seconds at 30fps
-        {
-            var joints = new Dictionary<string, JointPosition>
-            {
-                ["nose"] = new() { X = 0.5 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.95 },
-                ["left_eye"] = new() { X = 0.47 + random.NextDouble() * 0.02, Y = 0.12 + random.NextDouble() * 0.02, Confidence = 0.90 },
-                ["right_eye"] = new() { X = 0.53 + random.NextDouble() * 0.02, Y = 0.12 + random.NextDouble() * 0.02, Confidence = 0.90 },
-                ["left_ear"] = new() { X = 0.44 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.85 },
-                ["right_ear"] = new() { X = 0.56 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.85 },
-                ["left_shoulder"] = new() { X = 0.38 + random.NextDouble() * 0.04, Y = 0.25 + random.NextDouble() * 0.03, Confidence = 0.95 },
-                ["right_shoulder"] = new() { X = 0.62 + random.NextDouble() * 0.04, Y = 0.25 + random.NextDouble() * 0.03, Confidence = 0.95 },
-                ["left_elbow"] = new() { X = 0.32 + random.NextDouble() * 0.08, Y = 0.35 + random.NextDouble() * 0.05, Confidence = 0.90 },
-                ["right_elbow"] = new() { X = 0.68 + random.NextDouble() * 0.08, Y = 0.35 + random.NextDouble() * 0.05, Confidence = 0.90 },
-                ["left_wrist"] = new() { X = 0.25 + random.NextDouble() * 0.15, Y = 0.45 + random.NextDouble() * 0.1, Confidence = 0.85 },
-                ["right_wrist"] = new() { X = 0.75 + random.NextDouble() * 0.15, Y = 0.45 + random.NextDouble() * 0.1, Confidence = 0.85 },
-                ["left_hip"] = new() { X = 0.42 + random.NextDouble() * 0.03, Y = 0.55 + random.NextDouble() * 0.02, Confidence = 0.95 },
-                ["right_hip"] = new() { X = 0.58 + random.NextDouble() * 0.03, Y = 0.55 + random.NextDouble() * 0.02, Confidence = 0.95 },
-                ["left_knee"] = new() { X = 0.40 + random.NextDouble() * 0.06, Y = 0.75 + random.NextDouble() * 0.04, Confidence = 0.90 },
-                ["right_knee"] = new() { X = 0.60 + random.NextDouble() * 0.06, Y = 0.75 + random.NextDouble() * 0.04, Confidence = 0.90 },
-                ["left_ankle"] = new() { X = 0.38 + random.NextDouble() * 0.08, Y = 0.92 + random.NextDouble() * 0.03, Confidence = 0.85 },
-                ["right_ankle"] = new() { X = 0.62 + random.NextDouble() * 0.08, Y = 0.92 + random.NextDouble() * 0.03, Confidence = 0.85 }
-            };
-
-            frames.Add(new PoseFrame
-            {
-                FrameNumber = i,
-                Timestamp = i / 30.0,
-                Joints = joints
-            });
-        }
-
-        return frames;
     }
 
     private void ResetAnalysis()
