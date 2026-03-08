@@ -11,8 +11,8 @@
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <div class="d-flex justify-center align-center" style="height: 150px;">
-                        <div class="position-relative d-inline-flex justify-center align-center">
+                    <div Class="d-flex justify-center align-center" Style="height: 150px;">
+                        <div Class="position-relative d-inline-flex justify-center align-center">
                             <MudProgressCircular Value="@Result.Assessment.RiskScore" 
                                                  Size="Size.Large"
                                                  Color="@GetRiskColor(Result.Assessment.OverallRisk)"
@@ -31,52 +31,21 @@
         <!-- Feature Breakdown -->
         <MudItem xs="12" md="8">
             <MudText Typo="Typo.h6" Class="mb-4">Feature Analysis</MudText>
-            <MudTable T="object" Dense="true" Hover="true">
-                <MudTHead>
-                    <MudTr>
-                        <MudTh>Feature</MudTh>
-                        <MudTh>Value</MudTh>
-                        <MudTh>Status</MudTh>
-                    </MudTr>
-                </MudTHead>
-                <MudTBody>
-                    <MudTr>
-                        <MudTd>Movement Complexity</MudTd>
-                        <MudTd>@Result.Assessment.Breakdown.MovementComplexity.Value.ToString("F3")</MudTd>
-                        <MudTd>
-                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementComplexity.Status)">
-                                @Result.Assessment.Breakdown.MovementComplexity.Status
-                            </MudChip>
-                        </MudTd>
-                    </MudTr>
-                    <MudTr>
-                        <MudTd>Movement Variability</MudTd>
-                        <MudTd>@Result.Assessment.Breakdown.MovementVariability.Value.ToString("F3")</MudTd>
-                        <MudTd>
-                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementVariability.Status)">
-                                @Result.Assessment.Breakdown.MovementVariability.Status
-                            </MudChip>
-                        </MudTd>
-                    </MudTr>
-                    <MudTr>
-                        <MudTd>Fidgety Movements</MudTd>
-                        <MudTd>@Result.Assessment.Breakdown.FidgetyMovements.Value.ToString("F3")</MudTd>
-                        <MudTd>
-                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.FidgetyMovements.Status)">
-                                @Result.Assessment.Breakdown.FidgetyMovements.Status
-                            </MudChip>
-                        </MudTd>
-                    </MudTr>
-                    <MudTr>
-                        <MudTd>Symmetry</MudTd>
-                        <MudTd>@Result.Assessment.Breakdown.Symmetry.Value.ToString("F3")</MudTd>
-                        <MudTd>
-                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.Symmetry.Status)">
-                                @Result.Assessment.Breakdown.Symmetry.Status
-                            </MudChip>
-                        </MudTd>
-                    </MudTr>
-                </MudTBody>
+            <MudTable Items="@_featureRows" Dense="true" Hover="true" Style="width: 100%;">
+                <HeaderContent>
+                    <MudTh>Feature</MudTh>
+                    <MudTh>Value</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Feature">@context.Name</MudTd>
+                    <MudTd DataLabel="Value">@context.Value</MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.Status)">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                </RowTemplate>
             </MudTable>
         </MudItem>
 
@@ -114,6 +83,32 @@
 
     [Parameter]
     public EventCallback OnReset { get; set; }
+
+    private List<FeatureRow> _featureRows => new()
+    {
+        new FeatureRow(
+            "Movement Complexity",
+            Result.Assessment.Breakdown.MovementComplexity.Value.ToString("F3"),
+            Result.Assessment.Breakdown.MovementComplexity.Status
+        ),
+        new FeatureRow(
+            "Movement Variability",
+            Result.Assessment.Breakdown.MovementVariability.Value.ToString("F3"),
+            Result.Assessment.Breakdown.MovementVariability.Status
+        ),
+        new FeatureRow(
+            "Fidgety Movements",
+            Result.Assessment.Breakdown.FidgetyMovements.Value.ToString("F3"),
+            Result.Assessment.Breakdown.FidgetyMovements.Status
+        ),
+        new FeatureRow(
+            "Symmetry",
+            Result.Assessment.Breakdown.Symmetry.Value.ToString("F3"),
+            Result.Assessment.Breakdown.Symmetry.Status
+        )
+    };
+
+    private record FeatureRow(string Name, string Value, string Status);
 
     private Color GetRiskColor(string risk) => risk switch
     {

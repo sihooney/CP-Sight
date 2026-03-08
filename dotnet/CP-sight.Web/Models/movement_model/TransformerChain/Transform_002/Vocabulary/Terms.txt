@@ -1,0 +1,5 @@
+# Number of terms = 4
+0	normal
+1	poor_repertoire
+2	cramped_synchronized
+3	absent_fidgety

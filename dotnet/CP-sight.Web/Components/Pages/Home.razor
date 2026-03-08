@@ -24,7 +24,7 @@
     <!-- Key Features -->
     <MudGrid Class="mt-8">
         <MudItem xs="12" md="4">
-            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
                 <MudIcon Icon="@Icons.Material.Filled.Videocam" Size="Size.Large" Color="Color.Primary" />
                 <MudText Typo="Typo.h6" Class="mt-4">Video Analysis</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
@@ -33,7 +33,7 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="4">
-            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
                 <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="Size.Large" Color="Color.Secondary" />
                 <MudText Typo="Typo.h6" Class="mt-4">AI-Powered GMA</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
@@ -42,7 +42,7 @@
             </MudPaper>
         </MudItem>
         <MudItem xs="12" md="4">
-            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
                 <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Color="Color.Tertiary" />
                 <MudText Typo="Typo.h6" Class="mt-4">Risk Assessment</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
@@ -55,17 +55,41 @@
     <!-- How It Works -->
     <MudPaper Elevation="0" Class="mt-12">
         <MudText Typo="Typo.h4" Class="mb-6 text-center">How It Works</MudText>
-        <MudStepper ActiveStep="_activeStep" NonLinear="true">
-            <MudStep Title="Upload Video" Icon="@Icons.Material.Filled.Upload">
-                Record a 30-60 second video of the infant lying supine during active movement.
-            </MudStep>
-            <MudStep Title="AI Analysis" Icon="@Icons.Material.Filled.Psychology">
-                Our AI extracts pose data and analyzes movement patterns frame by frame.
-            </MudStep>
-            <MudStep Title="Review Results" Icon="@Icons.Material.Filled.Assessment">
-                Get a comprehensive report with risk assessment and recommendations.
-            </MudStep>
-        </MudStepper>
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="2" Class="text-center">
+                    <MudCardContent>
+                        <MudIcon Icon="@Icons.Material.Filled.Upload" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
+                        <MudText Typo="Typo.h6">1. Upload Video</MudText>
+                        <MudText Typo="Typo.body2" Class="mt-2">
+                            Record a 30-60 second video of the infant lying supine during active movement.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="2" Class="text-center">
+                    <MudCardContent>
+                        <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                        <MudText Typo="Typo.h6">2. AI Analysis</MudText>
+                        <MudText Typo="Typo.body2" Class="mt-2">
+                            Our AI extracts pose data and analyzes movement patterns frame by frame.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="2" Class="text-center">
+                    <MudCardContent>
+                        <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Color="Color.Tertiary" Class="mb-3" />
+                        <MudText Typo="Typo.h6">3. Review Results</MudText>
+                        <MudText Typo="Typo.body2" Class="mt-2">
+                            Get a comprehensive report with risk assessment and recommendations.
+                        </MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
     </MudPaper>
 
     <!-- Research Disclaimer -->
@@ -78,5 +102,5 @@
 </MudContainer>
 
 @code {
-    private int _activeStep = 0;
+    // No state needed - simplified component
 }
