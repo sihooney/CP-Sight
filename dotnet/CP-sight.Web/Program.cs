@@ -49,7 +49,7 @@ builder.Services.AddScoped<CloudinaryService>();
 // ========================================
 var env = builder.Environment;
 var modelPath = builder.Configuration["PoseEstimation:ModelPath"] 
-    ?? Path.Combine(env.ContentRootPath, "Models", "movenet.onnx");
+    ?? Path.Combine(env.ContentRootPath, "Models", "model.onnx");
 
 builder.Services.Configure<PoseServiceSettings>(options =>
 {
@@ -116,8 +116,6 @@ app.UseAntiforgery();
 // ========================================
 
 app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
 
 // Video upload endpoint
 app.MapPost("/api/upload", async (
@@ -231,24 +229,37 @@ app.MapPost("/api/analyze", async (
 
         // 2. Extract frames from Cloudinary
         var frames = await cloudinary.ExtractFramesAsync(publicId, 30);
-        log.LogInformation("Extracted {Count} frames", frames.Count);
+        log.LogInformation("Extracted {Count} frame URLs", frames.Count);
 
-        // 3. Generate pose data (using MoveNet/MediaPipe/Simulation)
+        // 3. Download frames and run real pose estimation
         var poseData = new List<CP_Sight.Core.Models.PoseFrame>();
         var poseStatus = poseService.GetStatus();
         
-        for (int i = 0; i < frames.Count; i++)
+        var frameBytesList = new List<byte[]>();
+        foreach (var frame in frames)
         {
-            // In production, download each frame and run pose estimation
-            // For now, use simulation
-            var poseResult = poseService.ExtractPose(Array.Empty<byte>());
-            var joints = poseResult.Joints;
-            poseData.Add(new CP_Sight.Core.Models.PoseFrame
+            try
             {
-                FrameNumber = i,
-                Timestamp = i / 30.0,
-                Joints = joints
-            });
+                var bytes = await cloudinary.DownloadFrameAsync(frame.Url);
+                frameBytesList.Add(bytes);
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning(ex, "Failed to download frame {FrameNumber}", frame.FrameNumber);
+            }
+        }
+
+        if (frameBytesList.Count > 0)
+        {
+            poseData = poseService.ExtractPosesFromFrames(frameBytesList);
+            log.LogInformation("Pose estimation complete: {Count} frames processed via {Method}",
+                poseData.Count, poseStatus.ActiveMethod);
+        }
+        else
+        {
+            // Fallback to simulation if frame download fails
+            log.LogWarning("No frames downloaded, falling back to simulation");
+            poseData = poseService.GenerateSimulatedSequence(90);
         }
 
         // 4. Extract features

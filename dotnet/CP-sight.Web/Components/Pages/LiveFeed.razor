@@ -1,0 +1,437 @@
+@page "/live"
+@using CP_Sight.Core.Models
+@using CP_Sight.Core.Services
+@using CP_Sight.ML.Services
+@using CP_Sight.Web.Services
+@inject PoseService PoseService
+@inject FeatureExtractor FeatureExtractor
+@inject MovementClassifier Classifier
+@inject RiskAssessmentService RiskService
+@inject ReportGenerator ReportGenerator
+@inject IJSRuntime JS
+@inject ILogger<LiveFeed> Logger
+@implements IAsyncDisposable
+
+<PageTitle>Live Video Feed - CP-sight</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-6">
+        <MudIcon Icon="@Icons.Material.Filled.Videocam" Color="Color.Primary" Class="mr-2" />
+        Live Video Analysis
+    </MudText>
+
+    @if (_result != null)
+    {
+        <ResultsDisplay Result="_result" OnReset="ResetAnalysis" />
+    }
+    else
+    {
+        <MudGrid>
+            <!-- Infant Information -->
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Infant Information</MudText>
+
+                    <MudNumericField T="int" @bind-Value="_ageWeeks" Label="Age (weeks)"
+                                     Min="0" Max="60" Adornment="Adornment.End"
+                                     AdornmentText="weeks" Class="mb-4" />
+
+                    <MudNumericField T="int?" @bind-Value="_correctedAgeWeeks" Label="Corrected Age (weeks)"
+                                     Min="0" Max="60" Adornment="Adornment.End"
+                                     AdornmentText="weeks" Class="mb-4" />
+
+                    <MudCheckBox @bind-Value="_isPreterm" Label="Preterm Birth" Class="mb-4" />
+
+                    @if (_isPreterm)
+                    {
+                        <MudNumericField T="int?" @bind-Value="_gestationalAge" Label="GA at Birth"
+                                         Min="24" Max="42" Adornment="Adornment.End"
+                                         AdornmentText="weeks" Class="mb-4" />
+                    }
+
+                    <MudTextField T="string" @bind-Value="_riskFactorsText" Label="Risk Factors"
+                                  Lines="2" HelperText="Comma-separated" />
+
+                    <MudDivider Class="my-4" />
+
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">Capture Settings</MudText>
+                    <MudSlider @bind-Value="_captureDurationSec" Min="10" Max="120" Step="5"
+                               Color="Color.Primary">
+                        Duration: @_captureDurationSec seconds
+                    </MudSlider>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Live Video Feed -->
+            <MudItem xs="12" md="8">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Camera Feed</MudText>
+
+                    <div style="position: relative; background: #000; border-radius: 8px; overflow: hidden; min-height: 360px;">
+                        <video id="liveFeedVideo" autoplay muted playsinline
+                               style="width: 100%; max-height: 480px; display: block; margin: auto;" />
+                        <canvas id="liveFeedCanvas" style="display: none;" />
+
+                        @if (!_isCameraActive)
+                        {
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                                        display: flex; align-items: center; justify-content: center; color: #ccc;">
+                                <div style="text-align: center;">
+                                    <MudIcon Icon="@Icons.Material.Filled.VideocamOff" Size="Size.Large" />
+                                    <MudText Typo="Typo.body1" Class="mt-2">Camera inactive</MudText>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@_errorMessage</MudAlert>
+                    }
+
+                    <!-- Status Bar -->
+                    @if (_isCapturing)
+                    {
+                        <MudProgressLinear Value="@_captureProgress" Color="Color.Primary" Class="mt-4" />
+                        <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-1">
+                            Capturing: @_framesCollected frames | @(_captureElapsedSec)s / @(_captureDurationSec)s
+                        </MudText>
+                    }
+
+                    @if (_isAnalyzing)
+                    {
+                        <MudProgressLinear Indeterminate="true" Color="Color.Secondary" Class="mt-4" />
+                        <MudText Typo="Typo.caption" Align="Align.Center" Class="mt-1">@_statusMessage</MudText>
+                    }
+
+                    <!-- Controls -->
+                    <div class="d-flex justify-center gap-4 mt-4">
+                        @if (!_isCameraActive)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Videocam" OnClick="StartCamera">
+                                Start Camera
+                            </MudButton>
+                        }
+                        else if (!_isCapturing && !_isAnalyzing)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Error"
+                                       StartIcon="@Icons.Material.Filled.FiberManualRecord" OnClick="StartCapture">
+                                Record @(_captureDurationSec)s
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default"
+                                       StartIcon="@Icons.Material.Filled.VideocamOff" OnClick="StopCamera">
+                                Stop Camera
+                            </MudButton>
+                        }
+                        else if (_isCapturing)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Warning"
+                                       StartIcon="@Icons.Material.Filled.Stop" OnClick="StopCapture">
+                                Stop Early & Analyze
+                            </MudButton>
+                        }
+                    </div>
+
+                    <!-- Real-time Stats -->
+                    @if (_isCameraActive && _lastPoseResult != null)
+                    {
+                        <MudDivider Class="my-4" />
+                        <MudText Typo="Typo.subtitle2" Class="mb-2">Real-time Pose Detection</MudText>
+                        <MudChipSet T="string">
+                            <MudChip T="string" Color="@(_lastPoseResult.IsRealML ? Color.Success : Color.Warning)" Size="Size.Small">
+                                @_lastPoseResult.Method
+                            </MudChip>
+                            <MudChip T="string" Color="Color.Info" Size="Size.Small">
+                                @(_lastPoseResult.Joints.Count) joints
+                            </MudChip>
+                            <MudChip T="string" Color="Color.Default" Size="Size.Small">
+                                @(_lastPoseResult.ProcessingTimeMs)ms
+                            </MudChip>
+                        </MudChipSet>
+                    }
+
+                    <MudAlert Severity="Severity.Info" Class="mt-4" Dense="true">
+                        <strong>Instructions:</strong> Place the infant supine (on their back) with limbs freely moving.
+                        Ensure good lighting and keep the camera steady. Record for at least 30 seconds.
+                    </MudAlert>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    // --- Infant info fields ---
+    private int _ageWeeks = 12;
+    private int? _correctedAgeWeeks;
+    private bool _isPreterm;
+    private int? _gestationalAge;
+    private string _riskFactorsText = "";
+
+    // --- Camera / capture state ---
+    private bool _isCameraActive;
+    private bool _isCapturing;
+    private bool _isAnalyzing;
+    private int _captureDurationSec = 30;
+    private int _captureElapsedSec;
+    private double _captureProgress;
+    private int _framesCollected;
+    private string _statusMessage = "";
+    private string _errorMessage = "";
+
+    // --- Results ---
+    private AnalysisResult? _result;
+    private PoseEstimationResult? _lastPoseResult;
+
+    // --- Frame buffer ---
+    private readonly List<byte[]> _capturedFrames = new();
+    private DotNetObjectReference<LiveFeed>? _dotNetRef;
+    private System.Threading.Timer? _captureTimer;
+    private DateTime _captureStartTime;
+
+    private const int CaptureIntervalMs = 333; // ~3 fps for capture
+    private const int PreviewIntervalMs = 1000; // 1 fps for preview pose display
+
+    // ========================================
+    // CAMERA CONTROLS
+    // ========================================
+
+    private async Task StartCamera()
+    {
+        _errorMessage = "";
+        try
+        {
+            var started = await JS.InvokeAsync<bool>("cpSight.startWebcam", "liveFeedVideo");
+            if (started)
+            {
+                _isCameraActive = true;
+                _dotNetRef = DotNetObjectReference.Create(this);
+                Logger.LogInformation("Camera started successfully");
+            }
+            else
+            {
+                _errorMessage = "Failed to access camera. Please ensure camera permissions are granted.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Camera error: {ex.Message}";
+            Logger.LogError(ex, "Failed to start camera");
+        }
+    }
+
+    private async Task StopCamera()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("cpSight.stopWebcam");
+        }
+        catch { /* Ignore cleanup errors */ }
+        _isCameraActive = false;
+        _lastPoseResult = null;
+    }
+
+    // ========================================
+    // RECORDING / CAPTURE
+    // ========================================
+
+    private async Task StartCapture()
+    {
+        _capturedFrames.Clear();
+        _framesCollected = 0;
+        _captureElapsedSec = 0;
+        _captureProgress = 0;
+        _isCapturing = true;
+        _captureStartTime = DateTime.UtcNow;
+
+        Logger.LogInformation("Starting capture for {Duration} seconds", _captureDurationSec);
+
+        // Start periodic frame capture via JS interop
+        await JS.InvokeVoidAsync("cpSight.startFrameCapture",
+            "liveFeedVideo", "liveFeedCanvas", _dotNetRef, CaptureIntervalMs);
+
+        // Start a timer to track progress and auto-stop
+        _captureTimer = new System.Threading.Timer(async _ =>
+        {
+            var elapsed = (DateTime.UtcNow - _captureStartTime).TotalSeconds;
+            _captureElapsedSec = (int)elapsed;
+            _captureProgress = Math.Min(100, (elapsed / _captureDurationSec) * 100);
+
+            if (elapsed >= _captureDurationSec)
+            {
+                await InvokeAsync(async () => await StopCapture());
+            }
+            else
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    private async Task StopCapture()
+    {
+        _isCapturing = false;
+        _captureTimer?.Dispose();
+        _captureTimer = null;
+
+        try
+        {
+            await JS.InvokeVoidAsync("cpSight.stopFrameCapture");
+        }
+        catch { /* Ignore cleanup errors */ }
+
+        Logger.LogInformation("Capture stopped. Collected {Count} frames", _capturedFrames.Count);
+        StateHasChanged();
+
+        // Auto-analyze if we have enough frames
+        if (_capturedFrames.Count >= 5)
+        {
+            await RunAnalysis();
+        }
+        else
+        {
+            _errorMessage = $"Only {_capturedFrames.Count} frames captured. Need at least 5 frames. Try recording longer.";
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when a frame is captured
+    /// </summary>
+    [JSInvokable]
+    public async Task OnFrameCaptured(string base64Frame)
+    {
+        try
+        {
+            var frameBytes = Convert.FromBase64String(base64Frame);
+            _capturedFrames.Add(frameBytes);
+            _framesCollected = _capturedFrames.Count;
+
+            // Also run a quick pose estimation for the preview (every Nth frame)
+            if (_framesCollected % 3 == 0)
+            {
+                _lastPoseResult = PoseService.ExtractPose(frameBytes);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Frame capture callback failed");
+        }
+    }
+
+    // ========================================
+    // ANALYSIS
+    // ========================================
+
+    private async Task RunAnalysis()
+    {
+        _isAnalyzing = true;
+        _errorMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            // Step 1: Run pose estimation on all captured frames
+            _statusMessage = $"Running pose estimation on {_capturedFrames.Count} frames...";
+            StateHasChanged();
+            await Task.Yield(); // Allow UI to update
+
+            var poseData = PoseService.ExtractPosesFromFrames(_capturedFrames);
+            Logger.LogInformation("Pose estimation complete: {Count} frames via {Method}",
+                poseData.Count, PoseService.GetStatus().ActiveMethod);
+
+            // Step 2: Extract features
+            _statusMessage = "Extracting movement features...";
+            StateHasChanged();
+            await Task.Yield();
+
+            var features = FeatureExtractor.ExtractFeatures(poseData);
+
+            // Step 3: ML classification
+            _statusMessage = "Running ML classification...";
+            StateHasChanged();
+            await Task.Yield();
+
+            var prediction = Classifier.Predict(features);
+
+            // Step 4: Create infant info
+            var infantInfo = new InfantInfo
+            {
+                AgeWeeks = _ageWeeks,
+                CorrectedAgeWeeks = _correctedAgeWeeks,
+                IsPreterm = _isPreterm,
+                GestationalAgeAtBirth = _gestationalAge,
+                RiskFactors = _riskFactorsText.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            };
+
+            // Step 5: Risk assessment
+            _statusMessage = "Assessing CP risk...";
+            StateHasChanged();
+            await Task.Yield();
+
+            var assessment = RiskService.Assess(features, prediction, infantInfo);
+
+            // Step 6: Build result
+            _result = new AnalysisResult
+            {
+                Id = $"live-{Guid.NewGuid():N}",
+                Timestamp = DateTime.UtcNow,
+                InfantInfo = infantInfo,
+                VideoInfo = new VideoUploadResult
+                {
+                    PublicId = "live-capture",
+                    SecureUrl = "",
+                    Duration = _captureDurationSec,
+                    Format = "live-capture",
+                    Width = 640,
+                    Height = 480
+                },
+                PoseData = poseData,
+                Features = features,
+                Assessment = assessment,
+                ProcessingTimeMs = (int)(DateTime.UtcNow - _captureStartTime).TotalMilliseconds
+            };
+
+            Logger.LogInformation("Live analysis complete: {Id}, Risk: {Risk}",
+                _result.Id, _result.Assessment.OverallRisk);
+
+            // Stop camera since we have results
+            await StopCamera();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Live analysis failed");
+            _errorMessage = $"Analysis failed: {ex.Message}";
+        }
+        finally
+        {
+            _isAnalyzing = false;
+            _statusMessage = "";
+            StateHasChanged();
+        }
+    }
+
+    private void ResetAnalysis()
+    {
+        _result = null;
+        _capturedFrames.Clear();
+        _framesCollected = 0;
+        _errorMessage = "";
+    }
+
+    // ========================================
+    // CLEANUP
+    // ========================================
+
+    public async ValueTask DisposeAsync()
+    {
+        _captureTimer?.Dispose();
+        try
+        {
+            await JS.InvokeVoidAsync("cpSight.stopWebcam");
+        }
+        catch { /* Ignore during disposal */ }
+        _dotNetRef?.Dispose();
+    }
+}

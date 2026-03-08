@@ -15,38 +15,53 @@
             Based on Prechtl's General Movements Assessment, CP-sight analyzes infant videos 
             to detect early signs of cerebral palsy—when intervention matters most.
         </MudText>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/upload">
-            <MudIcon Icon="@Icons.Material.Filled.Upload" Class="mr-2" />
-            Start Analysis
-        </MudButton>
+        <MudButtonGroup Variant="Variant.Filled" Size="Size.Large">
+            <MudButton Color="Color.Primary" Href="/upload">
+                <MudIcon Icon="@Icons.Material.Filled.Upload" Class="mr-2" />
+                Upload Video
+            </MudButton>
+            <MudButton Color="Color.Secondary" Href="/live">
+                <MudIcon Icon="@Icons.Material.Filled.Videocam" Class="mr-2" />
+                Live Analysis
+            </MudButton>
+        </MudButtonGroup>
     </MudPaper>
 
     <!-- Key Features -->
     <MudGrid Class="mt-8">
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="3">
             <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
-                <MudIcon Icon="@Icons.Material.Filled.Videocam" Size="Size.Large" Color="Color.Primary" />
-                <MudText Typo="Typo.h6" Class="mt-4">Video Analysis</MudText>
+                <MudIcon Icon="@Icons.Material.Filled.CameraFront" Size="Size.Large" Color="Color.Success" />
+                <MudText Typo="Typo.h6" Class="mt-4">Live Feed</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
-                    Upload a short video of infant movements for automated pose estimation and analysis.
+                    Use your webcam for real-time infant movement capture and analysis.
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="3">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
+                <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-4">Video Upload</MudText>
+                <MudText Typo="Typo.body2" Class="mt-2">
+                    Upload a video for cloud-based frame extraction and pose estimation.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="3">
             <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
                 <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="Size.Large" Color="Color.Secondary" />
                 <MudText Typo="Typo.h6" Class="mt-4">AI-Powered GMA</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
-                    Machine learning models trained on research-validated movement patterns.
+                    MoveNet ONNX + ML.NET trained on research-validated movement patterns.
                 </MudText>
             </MudPaper>
         </MudItem>
-        <MudItem xs="12" md="4">
+        <MudItem xs="12" md="3">
             <MudPaper Elevation="2" Class="pa-6 text-center" Style="height: 200px;">
                 <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Color="Color.Tertiary" />
-                <MudText Typo="Typo.h6" Class="mt-4">Risk Assessment</MudText>
+                <MudText Typo="Typo.h6" Class="mt-4">Risk & Reports</MudText>
                 <MudText Typo="Typo.body2" Class="mt-2">
-                    Get detailed risk scores, feature breakdowns, and clinical recommendations.
+                    Risk scores, feature breakdowns, recommendations, and downloadable PDF reports.
                 </MudText>
             </MudPaper>
         </MudItem>

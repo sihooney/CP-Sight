@@ -3,6 +3,8 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using CP_Sight.Core.Models;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace CP_Sight.ML.Services;
 
@@ -191,23 +193,53 @@ public class MoveNetPoseEstimator : IDisposable
 
     /// <summary>
     /// Preprocess image for MoveNet model
-    /// Input: Any size image
-    /// Output: 1x3x192x192 tensor (NCHW format, normalized)
+    /// Input: Any size image (JPEG/PNG bytes)
+    /// Output: 1x3x192x192 tensor (NCHW format, normalized to [0,1])
     /// </summary>
     private Tensor<float> PreprocessImage(byte[] imageBytes)
     {
-        // For now, create a placeholder tensor
-        // In production, use ImageSharp or similar to:
-        // 1. Decode image
-        // 2. Resize to 192x192
-        // 3. Normalize to [0, 1] or [-1, 1] depending on model
-        // 4. Convert to NCHW format
-        
         var tensor = new DenseTensor<float>(new[] { 1, 3, InputSize, InputSize });
-        
-        // ImageSharp-based preprocessing would go here
-        // For now, return zeros (will be replaced with actual image data)
-        
+
+        if (imageBytes == null || imageBytes.Length == 0)
+        {
+            _logger?.LogWarning("Empty image bytes received, returning zero tensor");
+            return tensor;
+        }
+
+        try
+        {
+            using var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgb24>(imageBytes);
+
+            // Resize to 192x192 with padding to maintain aspect ratio
+            image.Mutate(x => x.Resize(new SixLabors.ImageSharp.Processing.ResizeOptions
+            {
+                Size = new SixLabors.ImageSharp.Size(InputSize, InputSize),
+                Mode = SixLabors.ImageSharp.Processing.ResizeMode.Pad,
+                PadColor = SixLabors.ImageSharp.Color.Black
+            }));
+
+            // Copy pixel data to a flat array first, then fill tensor
+            var pixelData = new byte[InputSize * InputSize * 3];
+            image.CopyPixelDataTo(pixelData);
+
+            var buffer = tensor.Buffer.Span;
+            for (int i = 0; i < InputSize * InputSize; i++)
+            {
+                int srcIdx = i * 3;
+                // NCHW: channels are contiguous planes, normalize to [0,1]
+                buffer[i] = pixelData[srcIdx] / 255.0f;                              // R
+                buffer[InputSize * InputSize + i] = pixelData[srcIdx + 1] / 255.0f;  // G
+                buffer[2 * InputSize * InputSize + i] = pixelData[srcIdx + 2] / 255.0f; // B
+            }
+
+            _logger?.LogDebug("Image preprocessed: {Width}x{Height} -> {Size}x{Size}",
+                image.Width, image.Height, InputSize, InputSize);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Image preprocessing failed, returning zero tensor");
+        }
+
         return tensor;
     }
 

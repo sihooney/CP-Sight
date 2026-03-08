@@ -1,4 +1,7 @@
 @using CP_Sight.Core.Models
+@using CP_Sight.Web.Services
+@inject ReportGenerator ReportGenerator
+@inject IJSRuntime JS
 
 <MudPaper Elevation="2" Class="pa-6">
     <MudGrid>
@@ -69,8 +72,17 @@
                 <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnReset">
                     New Analysis
                 </MudButton>
-                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Download">
-                    Download Report
+                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Download"
+                           OnClick="DownloadReport" Disabled="@_isGeneratingPdf">
+                    @if (_isGeneratingPdf)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <span>Generating PDF...</span>
+                    }
+                    else
+                    {
+                        <span>Download Report</span>
+                    }
                 </MudButton>
             </MudButtonGroup>
         </MudItem>
@@ -83,6 +95,27 @@
 
     [Parameter]
     public EventCallback OnReset { get; set; }
+
+    private bool _isGeneratingPdf;
+
+    private async Task DownloadReport()
+    {
+        _isGeneratingPdf = true;
+        StateHasChanged();
+
+        try
+        {
+            var pdfBytes = await ReportGenerator.GeneratePdfAsync(Result);
+            var base64 = Convert.ToBase64String(pdfBytes);
+            var fileName = $"CP-sight-Report-{Result.Id}.pdf";
+            await JS.InvokeVoidAsync("cpSight.downloadFile", fileName, base64, "application/pdf");
+        }
+        finally
+        {
+            _isGeneratingPdf = false;
+            StateHasChanged();
+        }
+    }
 
     private List<FeatureRow> _featureRows => new()
     {

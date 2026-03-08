@@ -396,7 +396,7 @@ internal class MovementParameters
 /// </summary>
 public class PoseServiceSettings
 {
-    public string MoveNetModelPath { get; set; } = "Models/movenet.onnx";
+    public string MoveNetModelPath { get; set; } = "Models/model.onnx";
     public SimulationMode SimulationMode { get; set; } = SimulationMode.Demo;
     public int? Seed { get; set; } = 42;
 }
