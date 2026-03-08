@@ -11,23 +11,12 @@
         <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Large" Class="mr-3" />
         <MudText Typo="Typo.h5">CP-sight</MudText>
         <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Home" Href="/" />
+        <MudIconButton Icon="@Icons.Material.Filled.Upload" Href="/upload" />
+        <MudIconButton Icon="@Icons.Material.Filled.Info" Href="/about" />
         <MudSwitch @bind-Value="_isDarkMode" Color="Color.Primary" />
         <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" />
     </MudAppBar>
-
-    <MudDrawer Elevation="2" Open="true" ClipMode="DrawerClipMode.Always" Variant="DrawerVariant.Mini">
-        <MudNavMenu>
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
-                Home
-            </MudNavLink>
-            <MudNavLink Href="/upload" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Upload">
-                Upload
-            </MudNavLink>
-            <MudNavLink Href="/about" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Info">
-                About
-            </MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
 
     <MudMainContent Class="pt-16 px-4">
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">

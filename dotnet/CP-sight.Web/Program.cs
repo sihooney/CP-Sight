@@ -95,6 +95,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Enable static files from Razor Class Libraries (like MudBlazor)
+app.UseStaticFiles();
+
 app.UseAntiforgery();
 
 // ========================================

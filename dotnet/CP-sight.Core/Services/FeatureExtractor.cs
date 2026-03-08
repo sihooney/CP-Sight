@@ -57,6 +57,10 @@ public class FeatureExtractor
             var dx = curr.X - prev.X;
             var prevDx = prev.X - prevPrev.X;
 
+            // Skip if values are NaN or Infinity
+            if (double.IsNaN(dx) || double.IsInfinity(dx) || 
+                double.IsNaN(prevDx) || double.IsInfinity(prevDx)) continue;
+
             if (Math.Sign(dx) != Math.Sign(prevDx) && Math.Abs(dx) > 0.001)
             {
                 directionChanges++;
@@ -86,6 +90,10 @@ public class FeatureExtractor
                     Math.Pow(curr.X - prev.X, 2) +
                     Math.Pow(curr.Y - prev.Y, 2)
                 );
+                
+                // Skip if velocity is NaN or Infinity
+                if (double.IsNaN(velocity) || double.IsInfinity(velocity)) continue;
+                
                 velocities.Add(velocity);
             }
         }
@@ -94,8 +102,9 @@ public class FeatureExtractor
         
         var mean = velocities.Average();
         var variance = velocities.Sum(v => Math.Pow(v - mean, 2)) / velocities.Count;
+        var result = Math.Sqrt(variance) * 10;
         
-        return Math.Min(1.0, Math.Sqrt(variance) * 10);
+        return double.IsNaN(result) || double.IsInfinity(result) ? 0.0 : Math.Min(1.0, result);
     }
 
     private double CalculateSymmetry(List<PoseFrame> frames)
