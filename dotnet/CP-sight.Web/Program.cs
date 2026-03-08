@@ -101,6 +101,10 @@ app.UseAntiforgery();
 // API ENDPOINTS
 // ========================================
 
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
 // Video upload endpoint
 app.MapPost("/api/upload", async (
     IFormFile video, 
