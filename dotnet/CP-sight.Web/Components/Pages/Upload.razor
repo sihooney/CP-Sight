@@ -27,11 +27,11 @@
                 <MudPaper Elevation="2" Class="pa-4">
                     <MudText Typo="Typo.h6" Class="mb-4">Infant Information</MudText>
                     
-                    <MudNumericField<int> @bind-Value="_ageWeeks" Label="Age (weeks)" 
+                    <MudNumericField T="int" @bind-Value="_ageWeeks" Label="Age (weeks)" 
                                           Min="0" Max="60" Adornment="Adornment.End" 
                                           AdornmentText="weeks" Class="mb-4" />
                     
-                    <MudNumericField<int?> @bind-Value="_correctedAgeWeeks" Label="Corrected Age (weeks, if preterm)" 
+                    <MudNumericField T="int?" @bind-Value="_correctedAgeWeeks" Label="Corrected Age (weeks, if preterm)" 
                                            Min="0" Max="60" Adornment="Adornment.End" 
                                            AdornmentText="weeks" Class="mb-4" />
                     
@@ -39,12 +39,12 @@
                     
                     @if (_isPreterm)
                     {
-                        <MudNumericField<int?> @bind-Value="_gestationalAge" Label="Gestational Age at Birth" 
+                        <MudNumericField T="int?" @bind-Value="_gestationalAge" Label="Gestational Age at Birth" 
                                                Min="24" Max="42" Adornment="Adornment.End" 
                                                AdornmentText="weeks" Class="mb-4" />
                     }
                     
-                    <MudTextField<string> @bind-Value="_riskFactorsText" Label="Additional Risk Factors" 
+                    <MudTextField T="string" @bind-Value="_riskFactorsText" Label="Additional Risk Factors" 
                                           Lines="2" HelperText="Comma-separated list (e.g., 'NICU stay, IVH grade 2')" />
                 </MudPaper>
             </MudItem>
@@ -54,12 +54,12 @@
                 <MudPaper Elevation="2" Class="pa-4">
                     <MudText Typo="Typo.h6" Class="mb-4">Video Upload</MudText>
                     
-                    <MudFileUpload OnFilesChanged="OnFileSelected" Accept=".mp4,.mov,.avi,.webm">
-                        <ButtonTemplate>
+                    <MudFileUpload T="IBrowserFile" OnFilesChanged="OnFileSelected" Accept=".mp4,.mov,.avi,.webm">
+                        <ActivatorContent>
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
                                 Select Video
                             </MudButton>
-                        </ButtonTemplate>
+                        </ActivatorContent>
                     </MudFileUpload>
                     
                     @if (_selectedFile != null)
@@ -158,7 +158,7 @@
             _statusMessage = "Uploading video to cloud...";
             StateHasChanged();
             
-            VideoUploadResult? videoResult = null;
+            CP_Sight.Core.Models.VideoUploadResult? videoResult = null;
             
             try
             {
@@ -221,7 +221,7 @@
                 Id = $"analysis-{Guid.NewGuid():N}",
                 Timestamp = DateTime.UtcNow,
                 InfantInfo = infantInfo,
-                VideoInfo = videoResult ?? new VideoUploadResult
+                VideoInfo = videoResult ?? new CP_Sight.Core.Models.VideoUploadResult
                 {
                     PublicId = "local-demo",
                     SecureUrl = "/videos/demo.mp4",

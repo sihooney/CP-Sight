@@ -38,16 +38,16 @@ public class ReportGenerator
                         .Column(col =>
                         {
                             // Patient Info Section
-                            col.Item().Element(container => CreatePatientInfoSection(container, result));
+                            CreatePatientInfoSection(col, result);
                             
                             // Risk Assessment Section
-                            col.Item().Element(container => CreateRiskSection(container, result));
+                            CreateAssessmentSection(col, result);
                             
                             // Features Section
-                            col.Item().Element(container => CreateFeaturesSection(container, result));
+                            CreateFeaturesSection(col, result);
                             
                             // Recommendations Section
-                            col.Item().Element(container => CreateRecommendationsSection(container, result));
+                            CreateRecommendationsSection(col, result);
                             
                             // Disclaimer
                             col.Item().PaddingTop(20).Text(GenerateDisclaimer())
@@ -93,7 +93,7 @@ public class ReportGenerator
             });
     }
 
-    private void CreateRiskSection(ColumnDescriptor container, AnalysisResult result)
+    private void CreateAssessmentSection(ColumnDescriptor container, AnalysisResult result)
     {
         var riskColor = result.Assessment.OverallRisk switch
         {
@@ -152,14 +152,14 @@ public class ReportGenerator
             {
                 col.Item().Text("Movement Features Analysis").SemiBold().FontSize(14);
                 
-                col.Item().PaddingTop(10).Element(c => CreateFeatureRow(c, 
-                    "Movement Complexity", result.Assessment.Breakdown.MovementComplexity));
-                col.Item().Element(c => CreateFeatureRow(c, 
-                    "Movement Variability", result.Assessment.Breakdown.MovementVariability));
-                col.Item().Element(c => CreateFeatureRow(c, 
-                    "Fidgety Movements", result.Assessment.Breakdown.FidgetyMovements));
-                col.Item().Element(c => CreateFeatureRow(c, 
-                    "Symmetry", result.Assessment.Breakdown.Symmetry));
+                CreateFeatureRow(col, 
+                    "Movement Complexity", result.Assessment.Breakdown.MovementComplexity);
+                CreateFeatureRow(col, 
+                    "Movement Variability", result.Assessment.Breakdown.MovementVariability);
+                CreateFeatureRow(col, 
+                    "Fidgety Movements", result.Assessment.Breakdown.FidgetyMovements);
+                CreateFeatureRow(col, 
+                    "Symmetry", result.Assessment.Breakdown.Symmetry);
             });
     }
 
@@ -173,14 +173,13 @@ public class ReportGenerator
             _ => Colors.Grey.Darken2
         };
 
-        container
-            .Row(row =>
-            {
-                row.RelativeItem().Text(name);
-                row.ConstantItem(60).Text($"{status.Value:F2}");
-                row.ConstantItem(80).Text(status.Status.ToUpper())
-                    .FontColor(statusColor).SemiBold();
-            });
+        container.Item().Row(row =>
+        {
+            row.RelativeItem().Text(name);
+            row.ConstantItem(60).Text($"{status.Value:F2}");
+            row.ConstantItem(80).Text(status.Status.ToUpper())
+                .FontColor(statusColor).SemiBold();
+        });
     }
 
     private void CreateRecommendationsSection(ColumnDescriptor container, AnalysisResult result)

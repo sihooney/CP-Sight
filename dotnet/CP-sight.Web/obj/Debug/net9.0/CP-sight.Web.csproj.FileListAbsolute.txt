@@ -1,7 +1,0 @@
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.csproj.AssemblyReference.cache
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\rpswa.dswa.cache.json
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.AssemblyInfoInputs.cache
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.AssemblyInfo.cs
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.csproj.CoreCompileInputs.cache
-C:\Users\Ramir\Documents\VSCode\CP-sight-NET9-Complete\dotnet\CP-sight.Web\obj\Debug\net9.0\CP-sight.Web.MvcApplicationPartsAssemblyInfo.cache

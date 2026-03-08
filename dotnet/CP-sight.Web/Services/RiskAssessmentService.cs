@@ -25,7 +25,7 @@ public class RiskAssessmentService
         // Determine overall risk level
         var overallRisk = riskScore switch
         {
-            < LowRiskThreshold -> "low",
+            < LowRiskThreshold => "low",
             > HighRiskThreshold => "high",
             _ => "medium"
         };
@@ -175,21 +175,15 @@ public class RiskAssessmentService
     {
         if (higherIsBetter)
         {
-            return value switch
-            {
-                < abnormalThreshold => "abnormal",
-                < borderlineThreshold => "borderline",
-                _ => "normal"
-            };
+            if (value < abnormalThreshold) return "abnormal";
+            if (value < borderlineThreshold) return "borderline";
+            return "normal";
         }
         else
         {
-            return value switch
-            {
-                > abnormalThreshold => "abnormal",
-                > borderlineThreshold => "borderline",
-                _ => "normal"
-            };
+            if (value > abnormalThreshold) return "abnormal";
+            if (value > borderlineThreshold) return "borderline";
+            return "normal";
         }
     }
 

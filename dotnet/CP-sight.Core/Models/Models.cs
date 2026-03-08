@@ -107,7 +107,7 @@ public record AnalysisResult
     public required string Id { get; init; }
     public required DateTime Timestamp { get; init; }
     public required InfantInfo InfantInfo { get; init; }
-    public required VideoUploadResult VideoInfo { get; init; }
+    public required CP_Sight.Core.Models.VideoUploadResult VideoInfo { get; init; }
     public required List<PoseFrame> PoseData { get; init; }
     public required MovementFeatures Features { get; init; }
     public required RiskAssessment Assessment { get; init; }
@@ -120,5 +120,5 @@ public record AnalysisResult
 public record AnalysisRequest
 {
     public required InfantInfo InfantInfo { get; init; }
-    public required VideoUploadResult VideoInfo { get; init; }
+    public required CP_Sight.Core.Models.VideoUploadResult VideoInfo { get; init; }
 }

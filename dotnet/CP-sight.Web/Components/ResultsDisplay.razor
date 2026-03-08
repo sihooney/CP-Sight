@@ -12,15 +12,16 @@
                 </MudCardHeader>
                 <MudCardContent>
                     <div class="d-flex justify-center align-center" style="height: 150px;">
-                        <MudProgressCircular Value="@Result.Assessment.RiskScore" 
-                                             Size="Size.Large"
-                                             Color="@GetRiskColor(Result.Assessment.OverallRisk)"
-                                             StrokeWidth="8"
-                                             Class="ma-4">
-                            <MudText Typo="Typo.h5">@Result.Assessment.RiskScore</MudText>
-                        </MudProgressCircular>
+                        <div class="position-relative d-inline-flex justify-center align-center">
+                            <MudProgressCircular Value="@Result.Assessment.RiskScore" 
+                                                 Size="Size.Large"
+                                                 Color="@GetRiskColor(Result.Assessment.OverallRisk)"
+                                                 StrokeWidth="8"
+                                                 Class="ma-4" />
+                            <MudText Typo="Typo.h5" Class="position-absolute">@Result.Assessment.RiskScore</MudText>
+                        </div>
                     </div>
-                    <MudChip Color="@GetRiskColor(Result.Assessment.OverallRisk)" Size="Size.Medium">
+                    <MudChip T="string" Color="@GetRiskColor(Result.Assessment.OverallRisk)" Size="Size.Medium">
                         @Result.Assessment.OverallRisk.ToUpper() RISK
                     </MudChip>
                 </MudCardContent>
@@ -30,7 +31,7 @@
         <!-- Feature Breakdown -->
         <MudItem xs="12" md="8">
             <MudText Typo="Typo.h6" Class="mb-4">Feature Analysis</MudText>
-            <MudTable Dense="true" Hover="true">
+            <MudTable T="object" Dense="true" Hover="true">
                 <MudTHead>
                     <MudTr>
                         <MudTh>Feature</MudTh>
@@ -43,7 +44,7 @@
                         <MudTd>Movement Complexity</MudTd>
                         <MudTd>@Result.Assessment.Breakdown.MovementComplexity.Value.ToString("F3")</MudTd>
                         <MudTd>
-                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementComplexity.Status)">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementComplexity.Status)">
                                 @Result.Assessment.Breakdown.MovementComplexity.Status
                             </MudChip>
                         </MudTd>
@@ -52,7 +53,7 @@
                         <MudTd>Movement Variability</MudTd>
                         <MudTd>@Result.Assessment.Breakdown.MovementVariability.Value.ToString("F3")</MudTd>
                         <MudTd>
-                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementVariability.Status)">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementVariability.Status)">
                                 @Result.Assessment.Breakdown.MovementVariability.Status
                             </MudChip>
                         </MudTd>
@@ -61,7 +62,7 @@
                         <MudTd>Fidgety Movements</MudTd>
                         <MudTd>@Result.Assessment.Breakdown.FidgetyMovements.Value.ToString("F3")</MudTd>
                         <MudTd>
-                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.FidgetyMovements.Status)">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.FidgetyMovements.Status)">
                                 @Result.Assessment.Breakdown.FidgetyMovements.Status
                             </MudChip>
                         </MudTd>
@@ -70,7 +71,7 @@
                         <MudTd>Symmetry</MudTd>
                         <MudTd>@Result.Assessment.Breakdown.Symmetry.Value.ToString("F3")</MudTd>
                         <MudTd>
-                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.Symmetry.Status)">
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.Symmetry.Status)">
                                 @Result.Assessment.Breakdown.Symmetry.Status
                             </MudChip>
                         </MudTd>

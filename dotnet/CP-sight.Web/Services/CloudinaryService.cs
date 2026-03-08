@@ -50,7 +50,7 @@ public class CloudinaryService
     /// <summary>
     /// Upload video for analysis with optimized settings
     /// </summary>
-    public async Task<VideoUploadResult> UploadVideoAsync(Stream videoStream, string publicId)
+    public async Task<CP_Sight.Core.Models.VideoUploadResult> UploadVideoAsync(Stream videoStream, string publicId)
     {
         var uploadParams = new VideoUploadParams
         {
@@ -58,7 +58,6 @@ public class CloudinaryService
             PublicId = publicId,
             Folder = "cp-sight-uploads",
             Overwrite = true,
-            ResourceType = ResourceType.Video,
             
             // Optimize video for analysis
             EagerTransforms = new List<Transformation>
@@ -106,7 +105,7 @@ public class CloudinaryService
         _logger.LogInformation("Video uploaded successfully: {PublicId}, Duration: {Duration}s", 
             result.PublicId, result.Duration);
 
-        return new VideoUploadResult
+        return new CP_Sight.Core.Models.VideoUploadResult
         {
             PublicId = result.PublicId,
             SecureUrl = result.SecureUrl.ToString(),
@@ -120,19 +119,18 @@ public class CloudinaryService
     /// <summary>
     /// Upload video from URL (e.g., from mobile app)
     /// </summary>
-    public async Task<VideoUploadResult> UploadVideoFromUrlAsync(string videoUrl, string publicId)
+    public async Task<CP_Sight.Core.Models.VideoUploadResult> UploadVideoFromUrlAsync(string videoUrl, string publicId)
     {
         var uploadParams = new VideoUploadParams
         {
             File = new FileDescription(videoUrl),
             PublicId = publicId,
-            Folder = "cp-sight-uploads",
-            ResourceType = ResourceType.Video
+            Folder = "cp-sight-uploads"
         };
 
         var result = await _cloudinary.UploadAsync(uploadParams);
 
-        return new VideoUploadResult
+        return new CP_Sight.Core.Models.VideoUploadResult
         {
             PublicId = result.PublicId,
             SecureUrl = result.SecureUrl.ToString(),
@@ -259,12 +257,12 @@ public class CloudinaryService
         return new VideoInfo
         {
             PublicId = result.PublicId,
-            Duration = result.Video?.Duration ?? 0,
+            Duration = 0, // Not available directly in GetResourceResult in this SDK version
             Width = result.Width,
             Height = result.Height,
             Format = result.Format,
-            FrameRate = result.Video?.FrameRate ?? 30,
-            BitRate = result.Video?.BitRate ?? 0
+            FrameRate = 30,
+            BitRate = 0
         };
     }
 
@@ -380,20 +378,17 @@ public class CloudinaryService
         var deleted = 0;
         var cutoffDate = DateTime.UtcNow.AddDays(-olderThanDays);
         
-        // List all resources in cp-sight-uploads folder
-        var listParams = new ListResourcesByPrefixParams
+        var listParams = new CloudinaryDotNet.Actions.ListResourcesByPrefixParams()
         {
             Type = "upload",
-            ResourceType = ResourceType.Video,
             Prefix = "cp-sight-uploads/",
             MaxResults = 500
         };
-
-        var result = await _cloudinary.ListResourcesByPrefixAsync(listParams);
+        var result = await _cloudinary.ListResourcesAsync(listParams);
         
         foreach (var resource in result.Resources)
         {
-            if (resource.CreatedAt < cutoffDate)
+            if (DateTime.TryParse(resource.CreatedAt, out var createdAtDate) && createdAtDate < cutoffDate)
             {
                 await DeleteVideoAsync(resource.PublicId);
                 deleted++;

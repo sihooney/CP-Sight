@@ -3,6 +3,13 @@ using CP_Sight.Core.Services;
 using CP_Sight.ML.Services;
 using MudBlazor.Services;
 
+using CP_Sight.Web.Components;
+using CP_Sight.Web;
+
+using DotNetEnv;
+
+// Load environment variables securely from .env file
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // ========================================
@@ -210,15 +217,16 @@ app.MapPost("/api/analyze", async (
         log.LogInformation("Extracted {Count} frames", frames.Count);
 
         // 3. Generate pose data (using MoveNet/MediaPipe/Simulation)
-        var poseData = new List<Core.Models.PoseFrame>();
+        var poseData = new List<CP_Sight.Core.Models.PoseFrame>();
         var poseStatus = poseService.GetStatus();
         
         for (int i = 0; i < frames.Count; i++)
         {
             // In production, download each frame and run pose estimation
             // For now, use simulation
-            var joints = poseService.ExtractPose(Array.Empty<byte>());
-            poseData.Add(new Core.Models.PoseFrame
+            var poseResult = poseService.ExtractPose(Array.Empty<byte>());
+            var joints = poseResult.Joints;
+            poseData.Add(new CP_Sight.Core.Models.PoseFrame
             {
                 FrameNumber = i,
                 Timestamp = i / 30.0,
@@ -233,7 +241,7 @@ app.MapPost("/api/analyze", async (
         var prediction = classifier.Predict(features);
 
         // 6. Risk assessment
-        var infantInfo = new Core.Models.InfantInfo
+        var infantInfo = new CP_Sight.Core.Models.InfantInfo
         {
             AgeWeeks = ageWeeks,
             IsPreterm = isPreterm,
