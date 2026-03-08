@@ -1,0 +1,44 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#app {
+    height: 100%;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIiIHk9IjIiIHdpZHRoPSI1MiIgaGVpZ2h0PSI0NCI+PC9yZWN0PjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2NS41MzYgNTQuNDU0Yy0uODQ3LjAzOC0xLjY1My4xNTUtMi40MzUuMzUyTDE5My42MiAzOC4zMThjLS44NjktLjIyMy0xLjY3Mi0uNTUzLTIuNDA1LS45OHMtMS40MDItLjk2NS0xLjk3Ny0xLjU4MWMtLjU3NS0uNjE2LTEuMDQtMS4zMDYtMS4zODctMi4wNjJzLS41ODUtMS41NzktLjcwOC0yLjQ2NmMtLjEyMy0uODg3LS4wODctMS43NjcuMTA3LTIuNjIxcy41My0xLjY2Mi45ODgtMi40MDUuOTY1LTEuNDAyIDEuNTgxLTEuOTc3IDEuMzA2LTEuMDQgMi4wNjItMS4zODcgMS41NzktLjU4NSAyLjQ2Ni0uNzA4Yy44ODctLjEyMyAxLjc2Ny0uMDg3IDIuNjIxLjEwN3MxLjY2Mi41MyAyLjQwNS45ODggMS40MDIuOTY1IDEuOTc3IDEuNTgxIDEuMDQgMS4zMDYgMS4zODcgMi4wNjIuNTg1IDEuNTc5LjcwOCAyLjQ2NmMuMTIzLjg4Ny4wODcgMS43NjctLjEwNyAyLjYyMXMtLjUzIDEuNjYyLS45ODggMi40MDUtLjk2NSAxLjQwMi0xLjU4MSAxLjk3Ny0xLjMwNiAxLjA0LTIuMDYyIDEuMzg3LTEuNTc5LjU4NS0yLjQ2Ni43MDhjLS44ODcuMTIzLTEuNzY3LjA4Ny0yLjYyMS0uMTA3cy0xLjY2Mi0uNTMtMi40MDUtLjk4OC0xLjQwMi0uOTY1LTEuOTc3LTEuNTgxLTEuMDQtMS4zMDYtMS4zODctMi4wNjItLjU4NS0xLjU3OS0uNzA4LTIuNDY2Yy0uMTIzLS44ODctLjA4Ny0xLjc2Ny4xMDctMi42MjFzLjUzLTEuNjYyLjk4OC0yLjQwNS45NjUtMS40MDIgMS41ODEtMS45NzcgMS4zMDYtMS4wNCAyLjA2Mi0xLjM4NyAxLjU3OS0uNTg1IDIuNDY2LS43MDh6IiBmaWxsPSIjRkYwMDAwIi8+PC9nPjwvc3ZnPg==) no-repeat 1rem/1.8rem;
+    border-left: 4px solid #ff0000;
+    padding: 0.5rem 1rem 0.5rem 3.7rem;
+    margin: 1rem 0;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
+
+.pt-16 {
+    padding-top: 4rem !important;
+}
