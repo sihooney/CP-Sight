@@ -71,9 +71,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# ML Models (download separately)
-*.onnx
-Models/movement_model.zip
-
 # Environment / Secrets
 .env
