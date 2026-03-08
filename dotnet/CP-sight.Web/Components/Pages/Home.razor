@@ -1,0 +1,82 @@
+@page "/"
+@attribute [StreamRendering]
+
+<PageTitle>CP-sight - Early CP Screening</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <!-- Hero Section -->
+    <MudPaper Elevation="0" Class="text-center py-12">
+        <MudIcon Icon="@Icons.Material.Filled.Visibility" Size="Size.Large" Color="Color.Primary" Class="mb-4" />
+        <MudText Typo="Typo.h3" Class="mb-4">CP-sight</MudText>
+        <MudText Typo="Typo.h5" Color="Color.Secondary" Class="mb-6">
+            AI-Powered Early Cerebral Palsy Screening
+        </MudText>
+        <MudText Typo="Typo.body1" Class="mb-8" Style="max-width: 600px; margin: 0 auto;">
+            Based on Prechtl's General Movements Assessment, CP-sight analyzes infant videos 
+            to detect early signs of cerebral palsy—when intervention matters most.
+        </MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Href="/upload">
+            <MudIcon Icon="@Icons.Material.Filled.Upload" Class="mr-2" />
+            Start Analysis
+        </MudButton>
+    </MudPaper>
+
+    <!-- Key Features -->
+    <MudGrid Class="mt-8">
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+                <MudIcon Icon="@Icons.Material.Filled.Videocam" Size="Size.Large" Color="Color.Primary" />
+                <MudText Typo="Typo.h6" Class="mt-4">Video Analysis</MudText>
+                <MudText Typo="Typo.body2" Class="mt-2">
+                    Upload a short video of infant movements for automated pose estimation and analysis.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+                <MudIcon Icon="@Icons.Material.Filled.Psychology" Size="Size.Large" Color="Color.Secondary" />
+                <MudText Typo="Typo.h6" Class="mt-4">AI-Powered GMA</MudText>
+                <MudText Typo="Typo.body2" Class="mt-2">
+                    Machine learning models trained on research-validated movement patterns.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="2" Class="pa-6 text-center" Height="200px">
+                <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="Size.Large" Color="Color.Tertiary" />
+                <MudText Typo="Typo.h6" Class="mt-4">Risk Assessment</MudText>
+                <MudText Typo="Typo.body2" Class="mt-2">
+                    Get detailed risk scores, feature breakdowns, and clinical recommendations.
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- How It Works -->
+    <MudPaper Elevation="0" Class="mt-12">
+        <MudText Typo="Typo.h4" Class="mb-6 text-center">How It Works</MudText>
+        <MudStepper ActiveStep="_activeStep" NonLinear="true">
+            <MudStep Title="Upload Video" Icon="@Icons.Material.Filled.Upload">
+                Record a 30-60 second video of the infant lying supine during active movement.
+            </MudStep>
+            <MudStep Title="AI Analysis" Icon="@Icons.Material.Filled.Psychology">
+                Our AI extracts pose data and analyzes movement patterns frame by frame.
+            </MudStep>
+            <MudStep Title="Review Results" Icon="@Icons.Material.Filled.Assessment">
+                Get a comprehensive report with risk assessment and recommendations.
+            </MudStep>
+        </MudStepper>
+    </MudPaper>
+
+    <!-- Research Disclaimer -->
+    <MudAlert Severity="Severity.Info" Class="mt-12" Dense="true">
+        <MudText Typo="Typo.body2">
+            <strong>Research Tool:</strong> CP-sight is designed for screening and research purposes. 
+            All assessments should be validated by qualified healthcare professionals.
+        </MudText>
+    </MudAlert>
+</MudContainer>
+
+@code {
+    private int _activeStep = 0;
+}

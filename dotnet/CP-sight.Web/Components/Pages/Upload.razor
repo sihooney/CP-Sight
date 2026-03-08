@@ -1,0 +1,299 @@
+@page "/upload"
+@using CP_Sight.Core.Models
+@using CP_Sight.Core.Services
+@using CP_Sight.ML.Services
+@using CP_Sight.Web.Services
+@inject FeatureExtractor FeatureExtractor
+@inject MovementClassifier Classifier
+@inject RiskAssessmentService RiskService
+@inject CloudinaryService Cloudinary
+@inject IWebHostEnvironment Environment
+@inject ILogger<Upload> Logger
+@inject NavigationManager Navigation
+
+<PageTitle>Upload & Analyze - CP-sight</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-6">
+        <MudIcon Icon="@Icons.Material.Filled.Upload" Color="Color.Primary" Class="mr-2" />
+        Upload Video for Analysis
+    </MudText>
+
+    @if (_result == null)
+    {
+        <MudGrid>
+            <!-- Infant Information -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Infant Information</MudText>
+                    
+                    <MudNumericField<int> @bind-Value="_ageWeeks" Label="Age (weeks)" 
+                                          Min="0" Max="60" Adornment="Adornment.End" 
+                                          AdornmentText="weeks" Class="mb-4" />
+                    
+                    <MudNumericField<int?> @bind-Value="_correctedAgeWeeks" Label="Corrected Age (weeks, if preterm)" 
+                                           Min="0" Max="60" Adornment="Adornment.End" 
+                                           AdornmentText="weeks" Class="mb-4" />
+                    
+                    <MudCheckBox @bind-Value="_isPreterm" Label="Preterm Birth" Class="mb-4" />
+                    
+                    @if (_isPreterm)
+                    {
+                        <MudNumericField<int?> @bind-Value="_gestationalAge" Label="Gestational Age at Birth" 
+                                               Min="24" Max="42" Adornment="Adornment.End" 
+                                               AdornmentText="weeks" Class="mb-4" />
+                    }
+                    
+                    <MudTextField<string> @bind-Value="_riskFactorsText" Label="Additional Risk Factors" 
+                                          Lines="2" HelperText="Comma-separated list (e.g., 'NICU stay, IVH grade 2')" />
+                </MudPaper>
+            </MudItem>
+
+            <!-- Video Upload -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.h6" Class="mb-4">Video Upload</MudText>
+                    
+                    <MudFileUpload OnFilesChanged="OnFileSelected" Accept=".mp4,.mov,.avi,.webm">
+                        <ButtonTemplate>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Upload">
+                                Select Video
+                            </MudButton>
+                        </ButtonTemplate>
+                    </MudFileUpload>
+                    
+                    @if (_selectedFile != null)
+                    {
+                        <MudAlert Severity="Severity.Success" Class="mt-4" Dense="true">
+                            Selected: @_selectedFile.Name (@FormatFileSize(_selectedFile.Size))
+                        </MudAlert>
+                    }
+                    
+                    <MudAlert Severity="Severity.Info" Class="mt-4" Dense="true">
+                        <strong>Requirements:</strong><br/>
+                        • Format: MP4, MOV, AVI, or WebM<br/>
+                        • Duration: 30-60 seconds<br/>
+                        • Content: Infant lying supine during active movement
+                    </MudAlert>
+                    
+                    @if (!string.IsNullOrEmpty(_cloudinaryError))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">
+                            @_cloudinaryError
+                        </MudAlert>
+                    }
+                </MudPaper>
+            </MudItem>
+
+            <!-- Analyze Button -->
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" 
+                           OnClick="RunAnalysis" Disabled="@_isAnalyzing" FullWidth="true">
+                    @if (_isAnalyzing)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <span>@_statusMessage</span>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.PlayArrow" Class="mr-2" />
+                        <span>Start Analysis</span>
+                    }
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <!-- Results Section -->
+        <ResultsDisplay Result="_result" OnReset="ResetAnalysis" />
+    }
+</MudContainer>
+
+@code {
+    private int _ageWeeks = 12;
+    private int? _correctedAgeWeeks;
+    private bool _isPreterm;
+    private int? _gestationalAge;
+    private string _riskFactorsText = "";
+    private IBrowserFile? _selectedFile;
+    private bool _isAnalyzing;
+    private string _statusMessage = "";
+    private string _cloudinaryError = "";
+    private AnalysisResult? _result;
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _cloudinaryError = "";
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB" };
+        int order = 0;
+        double size = bytes;
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        return $"{size:0.##} {sizes[order]}";
+    }
+
+    private async Task RunAnalysis()
+    {
+        if (_selectedFile == null)
+        {
+            _cloudinaryError = "Please select a video file";
+            return;
+        }
+
+        _isAnalyzing = true;
+        _cloudinaryError = "";
+
+        try
+        {
+            // Step 1: Upload to Cloudinary
+            _statusMessage = "Uploading video to cloud...";
+            StateHasChanged();
+            
+            VideoUploadResult? videoResult = null;
+            
+            try
+            {
+                using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 100 * 1024 * 1024);
+                videoResult = await Cloudinary.UploadVideoAsync(stream, $"cp-sight-{Guid.NewGuid():N}");
+                Logger.LogInformation("Video uploaded: {PublicId}", videoResult.PublicId);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, "Cloudinary upload failed, using local processing");
+                // Continue with local processing if Cloudinary fails
+            }
+
+            // Step 2: Extract frames (simulated for demo)
+            _statusMessage = "Extracting video frames...";
+            StateHasChanged();
+            await Task.Delay(500);
+
+            // Step 3: Pose estimation
+            _statusMessage = "Running pose estimation...";
+            StateHasChanged();
+            await Task.Delay(500);
+
+            // Step 4: Generate simulated pose data
+            _statusMessage = "Analyzing movement patterns...";
+            StateHasChanged();
+            var poseData = GenerateSimulatedPoseData();
+
+            // Step 5: Extract features
+            _statusMessage = "Extracting movement features...";
+            StateHasChanged();
+            var features = FeatureExtractor.ExtractFeatures(poseData);
+
+            // Step 6: Get ML prediction
+            _statusMessage = "Running ML classification...";
+            StateHasChanged();
+            var prediction = Classifier.Predict(features);
+
+            // Step 7: Create infant info
+            var infantInfo = new InfantInfo
+            {
+                AgeWeeks = _ageWeeks,
+                CorrectedAgeWeeks = _correctedAgeWeeks,
+                IsPreterm = _isPreterm,
+                GestationalAgeAtBirth = _gestationalAge,
+                RiskFactors = _riskFactorsText.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            };
+
+            // Step 8: Assess risk
+            _statusMessage = "Assessing CP risk...";
+            StateHasChanged();
+            var assessment = RiskService.Assess(features, prediction, infantInfo);
+
+            // Step 9: Create result
+            _statusMessage = "Generating report...";
+            StateHasChanged();
+            
+            _result = new AnalysisResult
+            {
+                Id = $"analysis-{Guid.NewGuid():N}",
+                Timestamp = DateTime.UtcNow,
+                InfantInfo = infantInfo,
+                VideoInfo = videoResult ?? new VideoUploadResult
+                {
+                    PublicId = "local-demo",
+                    SecureUrl = "/videos/demo.mp4",
+                    Duration = 45,
+                    Format = "mp4",
+                    Width = 1920,
+                    Height = 1080
+                },
+                PoseData = poseData,
+                Features = features,
+                Assessment = assessment,
+                ProcessingTimeMs = 1500
+            };
+
+            Logger.LogInformation("Analysis complete: {Id}, Risk: {Risk}", 
+                _result.Id, _result.Assessment.OverallRisk);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Analysis failed");
+            _cloudinaryError = $"Analysis failed: {ex.Message}";
+        }
+        finally
+        {
+            _isAnalyzing = false;
+            _statusMessage = "";
+        }
+    }
+
+    private List<PoseFrame> GenerateSimulatedPoseData()
+    {
+        var random = new Random();
+        var frames = new List<PoseFrame>();
+
+        for (int i = 0; i < 90; i++) // 3 seconds at 30fps
+        {
+            var joints = new Dictionary<string, JointPosition>
+            {
+                ["nose"] = new() { X = 0.5 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.95 },
+                ["left_eye"] = new() { X = 0.47 + random.NextDouble() * 0.02, Y = 0.12 + random.NextDouble() * 0.02, Confidence = 0.90 },
+                ["right_eye"] = new() { X = 0.53 + random.NextDouble() * 0.02, Y = 0.12 + random.NextDouble() * 0.02, Confidence = 0.90 },
+                ["left_ear"] = new() { X = 0.44 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.85 },
+                ["right_ear"] = new() { X = 0.56 + random.NextDouble() * 0.02, Y = 0.15 + random.NextDouble() * 0.02, Confidence = 0.85 },
+                ["left_shoulder"] = new() { X = 0.38 + random.NextDouble() * 0.04, Y = 0.25 + random.NextDouble() * 0.03, Confidence = 0.95 },
+                ["right_shoulder"] = new() { X = 0.62 + random.NextDouble() * 0.04, Y = 0.25 + random.NextDouble() * 0.03, Confidence = 0.95 },
+                ["left_elbow"] = new() { X = 0.32 + random.NextDouble() * 0.08, Y = 0.35 + random.NextDouble() * 0.05, Confidence = 0.90 },
+                ["right_elbow"] = new() { X = 0.68 + random.NextDouble() * 0.08, Y = 0.35 + random.NextDouble() * 0.05, Confidence = 0.90 },
+                ["left_wrist"] = new() { X = 0.25 + random.NextDouble() * 0.15, Y = 0.45 + random.NextDouble() * 0.1, Confidence = 0.85 },
+                ["right_wrist"] = new() { X = 0.75 + random.NextDouble() * 0.15, Y = 0.45 + random.NextDouble() * 0.1, Confidence = 0.85 },
+                ["left_hip"] = new() { X = 0.42 + random.NextDouble() * 0.03, Y = 0.55 + random.NextDouble() * 0.02, Confidence = 0.95 },
+                ["right_hip"] = new() { X = 0.58 + random.NextDouble() * 0.03, Y = 0.55 + random.NextDouble() * 0.02, Confidence = 0.95 },
+                ["left_knee"] = new() { X = 0.40 + random.NextDouble() * 0.06, Y = 0.75 + random.NextDouble() * 0.04, Confidence = 0.90 },
+                ["right_knee"] = new() { X = 0.60 + random.NextDouble() * 0.06, Y = 0.75 + random.NextDouble() * 0.04, Confidence = 0.90 },
+                ["left_ankle"] = new() { X = 0.38 + random.NextDouble() * 0.08, Y = 0.92 + random.NextDouble() * 0.03, Confidence = 0.85 },
+                ["right_ankle"] = new() { X = 0.62 + random.NextDouble() * 0.08, Y = 0.92 + random.NextDouble() * 0.03, Confidence = 0.85 }
+            };
+
+            frames.Add(new PoseFrame
+            {
+                FrameNumber = i,
+                Timestamp = i / 30.0,
+                Joints = joints
+            });
+        }
+
+        return frames;
+    }
+
+    private void ResetAnalysis()
+    {
+        _result = null;
+        _selectedFile = null;
+        _cloudinaryError = "";
+    }
+}

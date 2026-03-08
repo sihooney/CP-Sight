@@ -1,0 +1,132 @@
+@using CP_Sight.Core.Models
+
+<MudPaper Elevation="2" Class="pa-6">
+    <MudGrid>
+        <!-- Risk Score Display -->
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="0" Class="text-center">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Risk Assessment</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <div class="d-flex justify-center align-center" style="height: 150px;">
+                        <MudProgressCircular Value="@Result.Assessment.RiskScore" 
+                                             Size="Size.Large"
+                                             Color="@GetRiskColor(Result.Assessment.OverallRisk)"
+                                             StrokeWidth="8"
+                                             Class="ma-4">
+                            <MudText Typo="Typo.h5">@Result.Assessment.RiskScore</MudText>
+                        </MudProgressCircular>
+                    </div>
+                    <MudChip Color="@GetRiskColor(Result.Assessment.OverallRisk)" Size="Size.Medium">
+                        @Result.Assessment.OverallRisk.ToUpper() RISK
+                    </MudChip>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Feature Breakdown -->
+        <MudItem xs="12" md="8">
+            <MudText Typo="Typo.h6" Class="mb-4">Feature Analysis</MudText>
+            <MudTable Dense="true" Hover="true">
+                <MudTHead>
+                    <MudTr>
+                        <MudTh>Feature</MudTh>
+                        <MudTh>Value</MudTh>
+                        <MudTh>Status</MudTh>
+                    </MudTr>
+                </MudTHead>
+                <MudTBody>
+                    <MudTr>
+                        <MudTd>Movement Complexity</MudTd>
+                        <MudTd>@Result.Assessment.Breakdown.MovementComplexity.Value.ToString("F3")</MudTd>
+                        <MudTd>
+                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementComplexity.Status)">
+                                @Result.Assessment.Breakdown.MovementComplexity.Status
+                            </MudChip>
+                        </MudTd>
+                    </MudTr>
+                    <MudTr>
+                        <MudTd>Movement Variability</MudTd>
+                        <MudTd>@Result.Assessment.Breakdown.MovementVariability.Value.ToString("F3")</MudTd>
+                        <MudTd>
+                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.MovementVariability.Status)">
+                                @Result.Assessment.Breakdown.MovementVariability.Status
+                            </MudChip>
+                        </MudTd>
+                    </MudTr>
+                    <MudTr>
+                        <MudTd>Fidgety Movements</MudTd>
+                        <MudTd>@Result.Assessment.Breakdown.FidgetyMovements.Value.ToString("F3")</MudTd>
+                        <MudTd>
+                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.FidgetyMovements.Status)">
+                                @Result.Assessment.Breakdown.FidgetyMovements.Status
+                            </MudChip>
+                        </MudTd>
+                    </MudTr>
+                    <MudTr>
+                        <MudTd>Symmetry</MudTd>
+                        <MudTd>@Result.Assessment.Breakdown.Symmetry.Value.ToString("F3")</MudTd>
+                        <MudTd>
+                            <MudChip Size="Size.Small" Color="@GetStatusColor(Result.Assessment.Breakdown.Symmetry.Status)">
+                                @Result.Assessment.Breakdown.Symmetry.Status
+                            </MudChip>
+                        </MudTd>
+                    </MudTr>
+                </MudTBody>
+            </MudTable>
+        </MudItem>
+
+        <!-- Recommendations -->
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6" Class="mb-4">Recommendations</MudText>
+            <MudList T="string" Dense="true">
+                @foreach (var recommendation in Result.Assessment.Recommendations)
+                {
+                    <MudListItem Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Primary">
+                        @recommendation
+                    </MudListItem>
+                }
+            </MudList>
+        </MudItem>
+
+        <!-- Actions -->
+        <MudItem xs="12">
+            <MudDivider Class="my-4" />
+            <MudButtonGroup Variant="Variant.Outlined">
+                <MudButton Color="Color.Primary" StartIcon="@Icons.Material.Filled.Refresh" OnClick="OnReset">
+                    New Analysis
+                </MudButton>
+                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Download">
+                    Download Report
+                </MudButton>
+            </MudButtonGroup>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public AnalysisResult Result { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnReset { get; set; }
+
+    private Color GetRiskColor(string risk) => risk switch
+    {
+        "low" => Color.Success,
+        "medium" => Color.Warning,
+        "high" => Color.Error,
+        _ => Color.Default
+    };
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "normal" => Color.Success,
+        "borderline" => Color.Warning,
+        "abnormal" => Color.Error,
+        _ => Color.Default
+    };
+}

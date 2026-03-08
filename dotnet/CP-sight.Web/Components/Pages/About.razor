@@ -1,0 +1,90 @@
+@page "/about"
+
+<PageTitle>About CP-sight</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudText Typo="Typo.h3" Class="mb-6">About CP-sight</MudText>
+
+    <MudPaper Elevation="2" Class="pa-6 mb-6">
+        <MudText Typo="Typo.h5" Class="mb-4">The Problem</MudText>
+        <MudText Typo="Typo.body1" Class="mb-4">
+            Cerebral palsy (CP) is the most common motor disability in childhood, affecting approximately 
+            2-3 per 1,000 live births. Early detection is critical—research shows that early intervention 
+            during the first years of life can significantly improve outcomes. However, traditional diagnosis 
+            often doesn't occur until age 2 or later, missing the optimal window for intervention.
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-6 mb-6">
+        <MudText Typo="Typo.h5" Class="mb-4">Our Solution</MudText>
+        <MudText Typo="Typo.body1" Class="mb-4">
+            CP-sight leverages Prechtl's General Movements Assessment (GMA)—a validated, non-invasive method 
+            for early CP detection based on the quality of spontaneous movements in infants. Our AI-powered 
+            system analyzes infant videos to detect abnormal movement patterns that are highly predictive 
+            of cerebral palsy.
+        </MudText>
+        <MudText Typo="Typo.body1">
+            By using computer vision and machine learning, we automate the GMA process, making early screening 
+            more accessible and scalable, potentially reaching families who don't have access to specialized 
+            clinical assessments.
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-6 mb-6">
+        <MudText Typo="Typo.h5" Class="mb-4">The Science</MudText>
+        <MudText Typo="Typo.body1" Class="mb-4">
+            General Movements Assessment is based on decades of research by Professor Heinz Prechtl and colleagues. 
+            The assessment evaluates spontaneous "general movements"—complex movement patterns involving the 
+            whole body that are present from fetal life through early infancy.
+        </MudText>
+        <MudGrid Class="mt-4">
+            <MudItem xs="12" md="6">
+                <MudList T="string" Dense="true">
+                    <MudListItem>
+                        <strong>Fidgety Movements (9-20 weeks):</strong> Small, elegant movements that are 
+                        crucial for predicting CP. Absence of fidgety movements has >90% specificity for CP.
+                    </MudListItem>
+                    <MudListItem>
+                        <strong>Cramped-Synchronized:</strong> Rigid, simultaneous movements indicating high 
+                        CP risk (specificity ~95%).
+                    </MudListItem>
+                </MudList>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudList T="string" Dense="true">
+                    <MudListItem>
+                        <strong>Poor Repertoire:</strong> Monotonous, simple movements—moderate CP risk.
+                    </MudListItem>
+                    <MudListItem>
+                        <strong>Normal Movements:</strong> Variable, complex, fluent movements indicating 
+                        typical development.
+                    </MudListItem>
+                </MudList>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-6 mb-6">
+        <MudText Typo="Typo.h5" Class="mb-4">Technology Stack</MudText>
+        <MudChipSet>
+            <MudChip Color="Color.Primary" Size="Size.Small">.NET 9</MudChip>
+            <MudChip Color="Color.Secondary" Size="Size.Small">ASP.NET Core</MudChip>
+            <MudChip Color="Color.Tertiary" Size="Size.Small">Blazor</MudChip>
+            <MudChip Color="Color.Info" Size="Size.Small">ML.NET</MudChip>
+            <MudChip Color="Color.Warning" Size="Size.Small">ONNX Runtime</MudChip>
+            <MudChip Color="Color.Success" Size="Size.Small">Cloudinary</MudChip>
+        </MudChipSet>
+    </MudPaper>
+
+    <MudAlert Severity="Severity.Warning" Class="mb-6">
+        <MudText Typo="Typo.body2">
+            <strong>Research & Screening Tool Only:</strong> CP-sight is designed to assist in screening and 
+            should not replace professional medical diagnosis. All assessments should be validated by qualified 
+            healthcare professionals trained in General Movements Assessment.
+        </MudText>
+    </MudAlert>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/upload" StartIcon="@Icons.Material.Filled.Upload">
+        Try CP-sight Now
+    </MudButton>
+</MudContainer>

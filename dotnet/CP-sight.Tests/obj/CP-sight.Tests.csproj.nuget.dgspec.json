@@ -1,0 +1,368 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Tests\\CP-sight.Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj",
+        "projectName": "CP-sight.Core",
+        "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj",
+        "packagesPath": "C:\\Users\\Ramir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\NuGet.Config",
+          "C:\\Users\\Ramir\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj",
+        "projectName": "CP-sight.ML",
+        "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj",
+        "packagesPath": "C:\\Users\\Ramir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\NuGet.Config",
+          "C:\\Users\\Ramir\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.Extensions.Options": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[4.0.0, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.18.0, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Tests\\CP-sight.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Tests\\CP-sight.Tests.csproj",
+        "projectName": "CP-sight.Tests",
+        "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Tests\\CP-sight.Tests.csproj",
+        "packagesPath": "C:\\Users\\Ramir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\NuGet.Config",
+          "C:\\Users\\Ramir\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj"
+              },
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj"
+              },
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\CP-sight.Web.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\CP-sight.Web.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.12.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.8.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\CP-sight.Web.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\CP-sight.Web.csproj",
+        "projectName": "CP-sight.Web",
+        "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\CP-sight.Web.csproj",
+        "packagesPath": "C:\\Users\\Ramir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Web\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\NuGet.Config",
+          "C:\\Users\\Ramir\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.Core\\CP-sight.Core.csproj"
+              },
+              "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj": {
+                "projectPath": "C:\\Users\\Ramir\\Documents\\VSCode\\CP-sight-NET9-Complete\\dotnet\\CP-sight.ML\\CP-sight.ML.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "CloudinaryDotNet": {
+              "target": "Package",
+              "version": "[1.26.2, )"
+            },
+            "Microsoft.ML": {
+              "target": "Package",
+              "version": "[4.0.0, )"
+            },
+            "Microsoft.ML.OnnxRuntime": {
+              "target": "Package",
+              "version": "[1.18.0, )"
+            },
+            "Microsoft.ML.OnnxRuntime.Extensions": {
+              "target": "Package",
+              "version": "[0.13.0, )"
+            },
+            "MudBlazor": {
+              "target": "Package",
+              "version": "[7.8.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2024.12.0, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "SixLabors.ImageSharp.Drawing": {
+              "target": "Package",
+              "version": "[2.1.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
