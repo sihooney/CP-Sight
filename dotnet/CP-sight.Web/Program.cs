@@ -54,7 +54,20 @@ var modelPath = builder.Configuration["PoseEstimation:ModelPath"]
 builder.Services.Configure<PoseServiceSettings>(options =>
 {
     options.MoveNetModelPath = modelPath;
-    options.UseMediaPipe = builder.Configuration.GetValue<bool>("PoseEstimation:UseMediaPipe");
+    
+    // Parse simulation mode from config
+    var simMode = builder.Configuration["PoseEstimation:SimulationMode"];
+    if (Enum.TryParse<SimulationMode>(simMode, ignoreCase: true, out var mode))
+    {
+        options.SimulationMode = mode;
+    }
+    
+    // Parse seed for reproducible demos
+    var seedStr = builder.Configuration["PoseEstimation:Seed"];
+    if (int.TryParse(seedStr, out var seed))
+    {
+        options.Seed = seed;
+    }
 });
 
 // Register PoseService as singleton (loads model once)
@@ -94,9 +107,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-// Enable static files from Razor Class Libraries (like MudBlazor)
 app.UseStaticFiles();
 
 app.UseAntiforgery();
@@ -159,7 +169,6 @@ app.MapGet("/api/pose/status", (PoseService poseService) =>
     {
         success = true,
         moveNetAvailable = status.MoveNetAvailable,
-        mediaPipeAvailable = status.MediaPipeAvailable,
         usingSimulation = status.UsingSimulation,
         activeMethod = status.ActiveMethod
     });
