@@ -13,7 +13,7 @@ public class PropertyTests
 
     // FsCheck Property: Extracted features should never be null and their values should be within plausible ranges
     [Property]
-    public Property FeatureExtraction_ShouldAlwaysReturnValidFeatures(List<PoseFrame> frames)
+    public bool FeatureExtraction_ShouldAlwaysReturnValidFeatures(List<PoseFrame> frames)
     {
         // Act
         var result = _extractor.ExtractFeatures(frames ?? new List<PoseFrame>());
@@ -22,20 +22,23 @@ public class PropertyTests
         var isNotNull = result != null;
         var complexityIsNonNegative = result?.MovementComplexity >= 0;
         var variabilityIsNonNegative = result?.MovementVariability >= 0;
-        var fidgetyIsNonNegative = result?.FidgetyMovements >= 0;
+        var fidgetyIsNonNegative = result?.FidgetyScore >= 0;
         var symmetryIsNonNegative = result?.LeftRightSymmetry >= 0;
 
-        return (isNotNull && 
-                complexityIsNonNegative && 
-                variabilityIsNonNegative && 
-                fidgetyIsNonNegative && 
-                symmetryIsNonNegative).ToProperty();
+        return isNotNull && 
+               complexityIsNonNegative == true && 
+               variabilityIsNonNegative == true && 
+               fidgetyIsNonNegative == true && 
+               symmetryIsNonNegative == true;
     }
 
     [Property]
-    public Property FeatureExtraction_WithPurelyRandomJoints_ShouldNotCrash(List<float> randomValues)
+    public bool FeatureExtraction_WithPurelyRandomJoints_ShouldNotCrash(List<float> randomValues)
     {
-        if (randomValues == null || randomValues.Count == 0) return true.ToProperty();
+        if (randomValues == null || randomValues.Count == 0) 
+        {
+            return true;
+        }
 
         // Generate synthetic random frames from FsCheck
         var frames = new List<PoseFrame>();
@@ -53,6 +56,6 @@ public class PropertyTests
 
         var result = _extractor.ExtractFeatures(frames);
 
-        return (result != null).ToProperty();
+        return result != null;
     }
 }
